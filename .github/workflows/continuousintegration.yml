@@ -14,4 +14,4 @@ jobs:
         - name: Python Lint Code Scanning Action
           uses: advanced-security/python-lint-code-scanning-action@v1.1.2
           with:
-          linter: pylint
+            linter: pylint
