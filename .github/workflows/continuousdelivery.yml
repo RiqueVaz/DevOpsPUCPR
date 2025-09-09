@@ -59,4 +59,4 @@ jobs:
         with:
           context: ./AtvSom1
           push: true
-          tags: user/app:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-app:latest
