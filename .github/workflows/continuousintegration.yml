@@ -1,31 +1,53 @@
 name: Continuous Integration
+
 on: 
   pull_request:
     branches:
-    - main
+      - main
 
 jobs:
   build:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Check out repository code
-          uses: actions/checkout@v5
-        - name: Python Lint Code Scanning Action
-          uses: advanced-security/python-lint-code-scanning-action@v1.1.2
-          with:
-            linter: pylint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v5
+
+      - name: Python Lint Code Scanning Action
+        uses: advanced-security/python-lint-code-scanning-action@v1.1.2
+        with:
+          linter: pylint
 
   docker:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v5
-      -
-        # Add support for more platforms with QEMU (optional)
-        # https://github.com/docker/setup-qemu-action
-        name: Set up QEMU
+
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+  alert-email:
+    needs: [build, docker]  # espera os dois jobs terminarem
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar alerta por email
+        uses: devellany/send-mailer@v1.0.2
+        with:
+          host: smtp.gmail.com
+          port: 465
+          account: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          sender: GitHub Actions
+          from: ${{ secrets.EMAIL_USER }}
+          to: henriquevazctba@hotmail.com
+          subject: "[CI] Workflow ${{ job.status }} - ${{ github.repository }}"
+          body: |
+            O workflow de CI terminou.
+            Status do build: ${{ needs.build.result }}
+            Status do docker: ${{ needs.docker.result }}
+            Commit: ${{ github.sha }}
+            Repositório: ${{ github.repository }}
+          contentType: text/plain
