@@ -1,12 +1,12 @@
 name: Continuous Integration
+
 permissions:
   contents: read
 
 on: 
-  push:
-    branches: [ master ]
   pull_request:
-    branches: [ master ]
+    branches:
+      - main
 
 jobs:
   build:
@@ -35,9 +35,9 @@ jobs:
       - name: Enviar alerta por email
         uses: dawidd6/action-send-mail@v6
         with:
-          connection_url: ${{ secrets.MAIL_CONNECTION }} # smtp://user:pass@server:port
+          connection_url: ${{ secrets.MAIL_CONNECTION }}
           subject: "[CI] Workflow ${{ job.status }} - ${{ github.repository }}"
-          to: seuemail@exemplo.com
+          to: henriquevazctba@gmail.com
           from: GitHub Actions <${{ secrets.MAIL_ADDRESS }}>
           body: |
             O workflow de CI terminou.
@@ -45,8 +45,8 @@ jobs:
             Status do docker: ${{ needs.docker.result }}
             Commit: ${{ github.sha }}
             Repositório: ${{ github.repository }}
-          contentType: text/plain
           convert_markdown: true
           attachments: README.md
           nodemailerlog: true
           nodemailerdebug: true
+          server_port: 587
