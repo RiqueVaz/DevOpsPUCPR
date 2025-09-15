@@ -1,18 +1,17 @@
 name: Continuous Integration
 
 on: 
+  push:
+    branches: [ master ]
   pull_request:
-    branches:
-      - main
+    branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v5
-
-      - name: Python Lint Code Scanning Action
+      - uses: actions/checkout@v5
+      - name: Python Lint Code Scanning
         uses: advanced-security/python-lint-code-scanning-action@v1.1.2
         with:
           linter: pylint
@@ -22,28 +21,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
   alert-email:
-    needs: [build, docker]  # espera os dois jobs terminarem
+    needs: [build, docker]
     runs-on: ubuntu-latest
     steps:
       - name: Enviar alerta por email
-        uses: devellany/send-mailer@v1.0.2
+        uses: dawidd6/action-send-mail@v6
         with:
-          host: smtp.gmail.com
-          port: 465
-          account: ${{ secrets.EMAIL_USER }}
-          password: ${{ secrets.EMAIL_PASS }}
-          sender: GitHub Actions
-          from: ${{ secrets.EMAIL_USER }}
-          to: henriquevazctba@hotmail.com
+          connection_url: ${{ secrets.MAIL_CONNECTION }} # smtp://user:pass@server:port
           subject: "[CI] Workflow ${{ job.status }} - ${{ github.repository }}"
+          to: seuemail@exemplo.com
+          from: GitHub Actions <${{ secrets.MAIL_ADDRESS }}>
           body: |
             O workflow de CI terminou.
             Status do build: ${{ needs.build.result }}
@@ -51,3 +44,5 @@ jobs:
             Commit: ${{ github.sha }}
             Repositório: ${{ github.repository }}
           contentType: text/plain
+          convert_markdown: true
+          attachments: README.md
