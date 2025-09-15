@@ -35,7 +35,6 @@ jobs:
       - name: Enviar alerta por email
         uses: dawidd6/action-send-mail@v6
         with:
-          # Use MAIL_CONNECTION como secret (recomendado) ou configure server_* abaixo
           connection_url: ${{ secrets.MAIL_CONNECTION }}
           subject: "[CI] Workflow ${{ job.status }} - ${{ github.repository }}"
           to: henriquevazctba@gmail.com
@@ -50,3 +49,4 @@ jobs:
           attachments: README.md
           nodemailerlog: true
           nodemailerdebug: true
+          server_port: 587
