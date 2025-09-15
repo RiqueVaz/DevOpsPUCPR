@@ -27,7 +27,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
   alert-email:
-    needs: [build]
+    needs: [build, docker]
     runs-on: ubuntu-latest
     steps:
       - name: Enviar alerta por email
@@ -46,3 +46,5 @@ jobs:
           contentType: text/plain
           convert_markdown: true
           attachments: README.md
+          nodemailerlog: true
+          nodemailerdebug: true
