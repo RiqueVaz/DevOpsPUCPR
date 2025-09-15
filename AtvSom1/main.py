@@ -15,14 +15,14 @@ class Estudante(BaseModel):
 
 
 estudantes_db: List[Estudante] = []
-next_id = 1
 
 
 @app.post("/estudantes", response_model=Estudante)
 async def criar_estudante(estudante: Estudante):
-    global next_id
-    estudante.id = next_id
-    next_id += 1
+    while True:
+        estudante.id = random.randint(1000, 9999)
+        if not any(e.id == estudante.id for e in estudantes_db):
+            break
     estudantes_db.append(estudante)
     return estudante
 
