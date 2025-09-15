@@ -49,4 +49,4 @@ jobs:
           attachments: README.md
           nodemailerlog: true
           nodemailerdebug: true
-          server_port: 465
+          server_port: 587
