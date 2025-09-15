@@ -5,17 +5,13 @@ import os
 from httpx import AsyncClient
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from main import app, estudantes_db, next_id
+from main import app, estudantes_db
 
 @pytest.fixture(autouse=True)
 def setup_and_cleanup():
     estudantes_db.clear()
-    global next_id
-    next_id = 1
     yield
     estudantes_db.clear()
-    global next_id
-    next_id = 1
 
 @pytest_asyncio.fixture
 async def client():
@@ -36,7 +32,8 @@ async def test_criar_estudante(client):
     assert response.status_code == 200
     data = response.json()
     assert data["nome"] == "João Silva"
-    assert data["id"] == 1
+    assert 1000 <= data["id"] <= 9999
+    assert data["id"] is not None
 
 @pytest.mark.asyncio
 async def test_listar_estudantes(client):
